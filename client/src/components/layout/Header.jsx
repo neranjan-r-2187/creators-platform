@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <header style={headerStyle}>
       <div style={containerStyle}>
@@ -12,10 +21,19 @@ const Header = () => {
         </h1>
 
         {/* Navigation Links */}
-        <nav>
+        <nav style={{ display: 'flex', alignItems: 'center' }}>
           <Link to="/" style={navLinkStyle}>Home</Link>
-          <Link to="/login" style={navLinkStyle}>Login</Link>
-          <Link to="/register" style={navLinkStyle}>Register</Link>
+          {user ? (
+            <>
+              <Link to="/dashboard" style={navLinkStyle}>Dashboard</Link>
+              <button onClick={handleLogout} style={logoutButtonStyle}>Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" style={navLinkStyle}>Login</Link>
+              <Link to="/register" style={navLinkStyle}>Register</Link>
+            </>
+          )}
         </nav>
       </div>
     </header>
@@ -52,6 +70,16 @@ const navLinkStyle = {
   color: 'white',
   textDecoration: 'none',
   marginLeft: '2rem',
+};
+
+const logoutButtonStyle = {
+  backgroundColor: 'transparent',
+  border: 'none',
+  color: 'white',
+  cursor: 'pointer',
+  marginLeft: '2rem',
+  fontSize: '1rem',
+  padding: 0,
 };
 
 export default Header;

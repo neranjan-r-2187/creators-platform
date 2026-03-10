@@ -1,9 +1,13 @@
+import { useAuth } from '../context/AuthContext';
+
 const Dashboard = () => {
+  const { user } = useAuth();
+
   return (
     <div style={containerStyle}>
       <div style={headerStyle}>
         <h1>Dashboard</h1>
-        <p>Welcome back!</p>
+        <p>Welcome {user?.email}!</p>
       </div>
 
       <div style={contentStyle}>

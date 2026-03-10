@@ -1,23 +1,54 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Fake login for demo
+    const fakeUser = { email };
+    const fakeToken = 'abc-123-fake-token';
+    
+    login(fakeUser, fakeToken);
+    navigate('/dashboard');
+  };
+
   return (
     <div style={containerStyle}>
       <div style={formContainerStyle}>
         <h1 style={titleStyle}>Login</h1>
         <p style={subtitleStyle}>Sign in to your account</p>
         
-        {/* Placeholder for login form */}
-        <div style={placeholderStyle}>
-          <p>Login form will be implemented in a future lesson</p>
-          <p>This will include:</p>
-          <ul style={listStyle}>
-            <li>Email input field</li>
-            <li>Password input field</li>
-            <li>Login button</li>
-            <li>Form validation</li>
-          </ul>
-        </div>
+        <form onSubmit={handleLogin} style={placeholderStyle}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Email</label>
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem' }}>Password</label>
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box' }}
+            />
+          </div>
+          <button type="submit" style={{ width: '100%', padding: '0.75rem', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+            Login
+          </button>
+        </form>
 
         <p style={linkTextStyle}>
           Don't have an account?{' '}
