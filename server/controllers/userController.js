@@ -199,8 +199,8 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 2. Find user by email (include password for comparison)
-    const user = await User.findOne({ email });
+    // 2. Find user by email — explicitly include password (select: false in model)
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
