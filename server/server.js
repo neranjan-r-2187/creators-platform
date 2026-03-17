@@ -1,4 +1,6 @@
 import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/database.js';
@@ -47,7 +49,30 @@ app.use((req, res, next) => {
 // Centralized error handler (must be after routes)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
+// Create HTTP server from Express app
+const httpServer = createServer(app);
+
+// Attach Socket.io to HTTP server
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log(`✅ User connected: ${socket.id}`);
+
+  // Handle disconnection
+  socket.on('disconnect', (reason) => {
+    console.log(`❌ User disconnected: ${socket.id} (${reason})`);
+  });
+});
+
+// Start the server
+httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🔌 Socket.io ready for connections`);
 });
