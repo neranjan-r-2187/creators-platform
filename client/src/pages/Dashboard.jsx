@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import socket from '../services/socket';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -11,13 +12,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // This demonstrates the Axios interceptor at work:
-        // api.js automatically attaches the JWT — we never write "Authorization" here.
         const response = await api.get('/users/me');
         setProfile(response.data.data);
       } catch (err) {
-        // 401 errors are handled globally by the response interceptor in api.js
-        // (auto-logout + redirect). Any other error shows here.
         setError(err.response?.data?.message || 'Failed to load profile data.');
       } finally {
         setLoading(false);
@@ -25,7 +22,31 @@ const Dashboard = () => {
     };
 
     fetchProfile();
+
+    // Socket.io initialization
+    socket.connect();
+
+    socket.on('connect', () => {
+      console.log('✅ Connected to socket server. ID:', socket.id);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('❌ Disconnected from socket server');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('⚠️ Socket connection error:', err.message);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+      socket.disconnect();
+    };
   }, []);
+
 
   return (
     <div style={containerStyle}>
